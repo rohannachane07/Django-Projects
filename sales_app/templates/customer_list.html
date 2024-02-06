@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Existing head content -->
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <!-- Custom styles -->
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa; /* Light gray background color */
+        }
+        .container {
+            background-color: #ffffff; /* White container background color */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            background-color: #007bff; /* Bootstrap primary color */
+        }
+        .navbar-brand,
+        .navbar-nav {
+            color: #ffffff !important; /* White text color */
+        }
+        .navbar-nav a {
+            color: #ffffff !important; /* White text color */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Sales_Project</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto"> <!-- Change here -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Orders</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Container -->
+    <div class="container mt-4">
+        <!-- Existing content -->
+
+        <h1 class="text-center">Customer List</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone_number }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Container for the graph -->
+        <div id="chartContainer">
+            <canvas id="productOrderGraph"></canvas>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery (for menu toggle) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-lAeNz6M6I1N3cJcJ4A6QnXc+T/+TpHHYUKnYSJEFMPjlG6J1UdG3cCDbWXPOIc7u" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy5qB9S9P1aDfFrl4JR/JEj5t9N6n5KZI3" crossorigin="anonymous"></script>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JavaScript code for rendering graph -->
+    <script>
+        // Fetch data from server
+        fetch('/product_order_graph')
+            .then(response => response.json())
+            .then(data => {
+                // Extract labels and data from the response
+                const labels = data.labels;
+                const values = data.data;
+
+                // Render graph using Chart.js
+                var ctx = document.getElementById('productOrderGraph').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar', // Choose chart type (e.g., bar, line)
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Orders',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)', // Customize background color
+                            borderColor: 'rgba(54, 162, 235, 1)', // Customize border color
+                            borderWidth: 1 // Customize border width
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    </script>
+</body>
+</html>
